@@ -4,6 +4,7 @@ Author  Feng Wu
 '''
 
 import sys
+import rdflib
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 
@@ -17,22 +18,48 @@ for i in range(1,len(rawList)):
 	
 sparql = SPARQLWrapper("http://dbpedia.org/sparql")
 queryStr = """
-select ?s ?label ?abstract where {
-    ?s rdfs:label ?label;
-       dbpedia-owl:abstract ?abstract.
+construct {
+?subj 	rdfs:label 	?label;
+		rdf:type  	?type;
+		rdfs:comment	?comment.
+}
+where {
+    ?subj 	rdfs:label 	?label;
+			rdf:type	?type;
+			rdfs:comment 	?comment.
     FILTER langMatches( lang(?label), "en" ).
-    FILTER langMatches( lang(?abstract), "en" ).
+    FILTER langMatches( lang(?comment), "en" ).
     ?label bif:contains '"""+rawList[0].title()+"""'.
 	"""+filterString+"""
 } LIMIT 10
 """
 print (queryStr)
+
 sparql.setQuery(queryStr)
 
 sparql.setReturnFormat(JSON)
-results = sparql.query().convert()
+try:
+	results = sparql.query().convert()
+except:
+	print (traceback.format_exc())
+	
+#print (results)
+'''
+file = open('temp.tmp', 'w')
+file.write(str(results))
+file.close
+
+
+print ('\n\n')
+print ('\n\n')
+print ('\n\n')
+g = rdflib.Graph()
+result = g.parse(results,format='n3')
+
+print("graph has %s statements." % len(g))
+'''
 
 for result in results["results"]["bindings"]:
-    print (result["s"]["value"],'\n')
+    print (result["subj"]["value"],'\n')
     print (result["label"]["value"],'\n')
-    print (result["abstract"]["value"][:800],'\n')
+    print (result["comment"]["value"][:300],'\n','...')

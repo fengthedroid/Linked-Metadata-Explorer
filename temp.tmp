@@ -1,0 +1,1 @@
+[a rdflib:ConjunctiveGraph;rdflib:storage [a rdflib:Store;rdfs:label 'IOMemory']]

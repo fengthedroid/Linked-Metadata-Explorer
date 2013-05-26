@@ -1,0 +1,14 @@
+construct {
+?subj 	rdfs:label 	?label;
+		rdf:type  	?type;
+		rdfs:comment	?comment.
+}
+where {
+    ?subj 	rdfs:label 	?label;
+			rdf:type	?type;
+			rdfs:comment 	?comment.
+    FILTER langMatches( lang(?label), "en" ).
+    FILTER langMatches( lang(?comment), "en" ).
+    ?label bif:contains 'Blade'.
+	FILTER regex(?label, "Runner").
+}
