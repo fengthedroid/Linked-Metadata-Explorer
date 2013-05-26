@@ -39,25 +39,26 @@ print (queryStr)
 sparql.setQuery(queryStr)
 
 sparql.setReturnFormat('rdf')
+
 try:
+	sys.stderr=''
 	results = sparql.query().convert()
+	sys.stderr=sys.__stderr__
 except:
 	print (traceback.format_exc())
 finally:
 	pass
 	
 
-for subjLabel in results.objects(None, rdflib.namespace.RDFS.label):
+for subjUri in results.subjects(predicate=rdflib.namespace.RDFS.label):
 	
-	subjUri = results.value(predicate=rdflib.namespace.RDFS.label,object=subjLabel)
-	subjComment = results.value(subject = subjUri, predicate=rdflib.namespace.RDFS.comment)
-	
-	pprint.pprint(subjLabel)
-	pprint.pprint(subjComment)
-	for objType in results.objects(subjUri,rdflib.namespace.RDF.type):
+	#print (subjUri)
+	topic = rdflib.resource.Resource(results,subjUri)
+
+	pprint.pprint(topic.label())
+	#pprint.pprint(topic.comment())
+	for objType in results.objects(subject=subjUri,predicate=rdflib.namespace.RDF.type):
 		print("\tThe type of the topic is",objType)
 	
 	
 print("graph has %s statements." % len(results))
-
-
