@@ -1,12 +1,12 @@
 '''
-Ver     0.1
+Ver     0.2
 Author  Feng Wu
 '''
 
+import pprint
 import sys
 import rdflib
 from SPARQLWrapper import SPARQLWrapper, JSON
-
 
 #Split words into a list
 rawList = sys.argv[1].split(' ')
@@ -17,6 +17,7 @@ for i in range(1,len(rawList)):
 		rawList[i][0].lower()+']'+rawList[i][1:]+'").\n'
 	
 sparql = SPARQLWrapper("http://dbpedia.org/sparql")
+
 queryStr = """
 construct {
 ?subj 	rdfs:label 	?label;
@@ -31,35 +32,32 @@ where {
     FILTER langMatches( lang(?comment), "en" ).
     ?label bif:contains '"""+rawList[0].title()+"""'.
 	"""+filterString+"""
-} LIMIT 10
+}
 """
 print (queryStr)
 
 sparql.setQuery(queryStr)
 
-sparql.setReturnFormat(JSON)
+sparql.setReturnFormat('rdf')
 try:
 	results = sparql.query().convert()
 except:
 	print (traceback.format_exc())
+finally:
+	pass
 	
-#print (results)
-'''
-file = open('temp.tmp', 'w')
-file.write(str(results))
-file.close
+
+for subjLabel in results.objects(None, rdflib.namespace.RDFS.label):
+	
+	subjUri = results.value(predicate=rdflib.namespace.RDFS.label,object=subjLabel)
+	subjComment = results.value(subject = subjUri, predicate=rdflib.namespace.RDFS.comment)
+	
+	pprint.pprint(subjLabel)
+	pprint.pprint(subjComment)
+	for objType in results.objects(subjUri,rdflib.namespace.RDF.type):
+		print("\tThe type of the topic is",objType)
+	
+	
+print("graph has %s statements." % len(results))
 
 
-print ('\n\n')
-print ('\n\n')
-print ('\n\n')
-g = rdflib.Graph()
-result = g.parse(results,format='n3')
-
-print("graph has %s statements." % len(g))
-'''
-
-for result in results["results"]["bindings"]:
-    print (result["subj"]["value"],'\n')
-    print (result["label"]["value"],'\n')
-    print (result["comment"]["value"][:300],'\n','...')
