@@ -1,5 +1,5 @@
 '''
-Ver:    0.2
+Ver:    0.3
 Author: Feng Wu
 Env:	Run on python 3.3
 '''
@@ -10,30 +10,33 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 def disam(keywords):
 
 	#build the query string
-	queryStr = queryKeyword(keywords)
-	print (queryStr)
+	queryStr = __queryKeyword(keywords)
+	#print (queryStr)
 	
 	#execute the query
-	results = execQuery(queryStr)	
+	results = __execQuery(queryStr)	
 	#print("graph has %s statements." % len(results))
 	
 	#iterate through the results and put each topic into a list
 	topicList = []
-	index = 0
-	for subjUri in results.subjects(predicate=rdflib.namespace.RDFS.label):		
+	index = 1
+	for subjUri in results.subjects(predicate=rdflib.namespace.RDFS.label):	
+		if index > 10:
+			break
 		topic = rdflib.resource.Resource(results,subjUri)	
 		topicList.append(topic)
-		print("No."+index+"  Title:  ",topic.label())
+		print("No."+str(index)+"  Title:  ",topic.label())
 		print("Absract: ",topic.comment())		
-		for objType in topic.objects(rdflib.namespace.RDF.type):
-			print("\tThe type of the topic is",objType.qname())	
+		#for objType in topic.objects(rdflib.namespace.RDF.type):
+		#	print("\tThe type of the topic is",objType.qname())	
 		print("--------------\n")
 		index += 1
 		
-	
+	inputIndex = input("Choose the number of the topic: ")
+	return topicList[int(inputIndex)-1]
 
 	
-def queryKeyword(keywords):
+def __queryKeyword(keywords):
 	
 	#Split words into a list
 	rawList = keywords.split(' ')
@@ -62,7 +65,7 @@ def queryKeyword(keywords):
 	"""
 	return queryStr
 
-def execQuery(queryStr):
+def __execQuery(queryStr):
 	sparql = SPARQLWrapper("http://dbpedia.org/sparql")
 	sparql.setQuery(queryStr)
 	sparql.setReturnFormat('rdf')
