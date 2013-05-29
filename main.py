@@ -15,4 +15,8 @@ else:
     chosenTopic = disam(sys.argv[1],0)
 	
 print ("You have chosen "+chosenTopic.label()) 
-buildClassTree(chosenTopic)
+
+try:
+	buildClassTree(chosenTopic)
+except Exception as ex:
+	raise ex
