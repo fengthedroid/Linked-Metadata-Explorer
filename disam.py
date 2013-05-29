@@ -7,7 +7,9 @@ import sys
 import rdflib
 from SPARQLWrapper import SPARQLWrapper
 
-def disam(keywords,chooser):
+#param: command line input
+#return a list of related topics
+def disam(keywords):
 
 	#build the query string
 	queryStr = __queryKeyword(keywords)
@@ -32,12 +34,7 @@ def disam(keywords,chooser):
 		print("--------------\n")
 		index += 1
 	
-	if chooser == 0:
-		inputIndex = input("Choose the number of the topic: ")
-		return topicList[int(inputIndex)-1]
-	else:
-		return topicList[int(chooser)]
-	
+	return topicList
 	
 def __queryKeyword(keywords):
 	

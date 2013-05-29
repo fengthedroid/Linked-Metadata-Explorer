@@ -7,15 +7,13 @@ Env:		Run on python 3.3
 #regex module
 import re
 import rdflib
-import networkx as nx
-import matplotlib.pyplot as plt
-#from pprint import pprint
+
 from SPARQLWrapper import SPARQLWrapper
 
 
-def buildClassTree(topic):
+def buildClassTree(topic,classTree):
+
 	classDict = {topic.identifier:topic}
-	classTree = nx.Graph()
 	classTree.add_node(topic.identifier)
 	
 	#the two ontology will not be queried
@@ -81,7 +79,4 @@ def buildClassTree(topic):
 				classTree.add_edge(objType.identifier,superClass.identifier)
 			print ("superclass is "+str(superClass.identifier))
 			
-	print (classTree.nodes())
-	print (classTree.edges())
-	nx.draw(classTree)
-	plt.show()
+	return classTree
