@@ -5,9 +5,9 @@ Env:	Run on python 3.3
 '''
 import sys
 import rdflib
-from SPARQLWrapper import SPARQLWrapper, JSON
+from SPARQLWrapper import SPARQLWrapper
 
-def disam(keywords):
+def disam(keywords,chooser):
 
 	#build the query string
 	queryStr = __queryKeyword(keywords)
@@ -31,10 +31,13 @@ def disam(keywords):
 		#	print("\tThe type of the topic is",objType.qname())	
 		print("--------------\n")
 		index += 1
-		
-	inputIndex = input("Choose the number of the topic: ")
-	return topicList[int(inputIndex)-1]
-
+	
+	if chooser == 0:
+		inputIndex = input("Choose the number of the topic: ")
+		return topicList[int(inputIndex)-1]
+	else:
+		return topicList[int(chooser)]
+	
 	
 def __queryKeyword(keywords):
 	
@@ -66,16 +69,17 @@ def __queryKeyword(keywords):
 	return queryStr
 
 def __execQuery(queryStr):
-	sparql = SPARQLWrapper("http://dbpedia.org/sparql")
-	sparql.setQuery(queryStr)
-	sparql.setReturnFormat('rdf')
+
 
 	try:
+		sparql = SPARQLWrapper("http://dbpedia.org/sparql")
+		sparql.setQuery(queryStr)
+		sparql.setReturnFormat('rdf')
 		sys.stderr=''
 		results = sparql.query().convert()
 		sys.stderr=sys.__stderr__
 	except:
-		print (traceback.format_exc())
+		print ('error: ',traceback.format_exc())
 		raise
 		
 	return results
