@@ -79,8 +79,9 @@ def buildClassTree(topic):
 				continue
 			if superClass.identifier in classTree.nodes():
 				classTree.add_edge(objType.identifier,superClass.identifier)
-			print ("superclass is "+str(subClass.identifier))
+			print ("superclass is "+str(superClass.identifier))
 			
 	print (classTree.nodes())
 	print (classTree.edges())
 	nx.draw(classTree)
+	plt.show()
