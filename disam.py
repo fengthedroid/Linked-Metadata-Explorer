@@ -3,8 +3,10 @@ Ver:    0.3
 Author: Feng Wu
 Env:	Run on python 3.3
 '''
+
 import sys
 import rdflib
+import time
 from SPARQLWrapper import SPARQLWrapper
 
 #param: command line input
@@ -13,11 +15,11 @@ def disam(keywords):
 
 	#build the query string
 	queryStr = __queryKeyword(keywords)
-	#print (queryStr)
+	print (queryStr)
 	
 	#execute the query
 	results = __execQuery(queryStr)	
-	#print("graph has %s statements." % len(results))
+	print("graph has %s statements." % len(results))
 	
 	#iterate through the results and put each topic into a list
 	topicList = []
@@ -28,7 +30,7 @@ def disam(keywords):
 		topic = rdflib.resource.Resource(results,subjUri)	
 		topicList.append(topic)
 		print("No."+str(index)+"  Title:  ",topic.label())
-		print("Absract: ",topic.comment())		
+		print("Absract: ",str(topic.comment()).encode(encoding='utf-8',errors='ignore'))		
 		#for objType in topic.objects(rdflib.namespace.RDF.type):
 		#	print("\tThe type of the topic is",objType.qname())	
 		print("--------------\n")
@@ -67,16 +69,16 @@ def __queryKeyword(keywords):
 
 def __execQuery(queryStr):
 
+	sparql = SPARQLWrapper("http://dbpedia.org/sparql")
+	sparql.setQuery(queryStr)
+	sparql.setReturnFormat('rdf')
 
-	try:
-		sparql = SPARQLWrapper("http://dbpedia.org/sparql")
-		sparql.setQuery(queryStr)
-		sparql.setReturnFormat('rdf')
-		sys.stderr=''
-		results = sparql.query().convert()
-		sys.stderr=sys.__stderr__
-	except:
-		print ('error: ',traceback.format_exc())
-		raise
+	for i in range(20):
+		try:
+			results = sparql.query().convert()
+			break
+		except:
+			print ('error: cannot query.')
+			time.sleep(5)
 		
 	return results

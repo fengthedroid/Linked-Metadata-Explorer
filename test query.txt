@@ -12,3 +12,12 @@ where {
     ?label bif:contains 'Blade'.
 	FILTER regex(?label, "Runner").
 }
+
+------------------
+
+select ?subj (COUNT(?type) as ?tCount)
+where {
+    ?subj 	rdf:type	?type.
+
+} GROUP BY ?subj
+ORDER BY DESC(?tCount)
