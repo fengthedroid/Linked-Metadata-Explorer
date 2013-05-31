@@ -11,7 +11,11 @@ import rdflib
 
 from SPARQLWrapper import SPARQLWrapper
 
-
+"""	
+def ontologyQuery(objType,queue):
+	print ("separate proc ", objType)
+	queue.put(rdflib.resource.Resource(rdflib.Graph().parse(str(objType.identifier),format="application/rdf+xml"),rdflib.URIRef(objType.identifier)))
+"""
 def buildClassTree(topic,classTree):
 
 	classDict = {topic.identifier:topic}
@@ -19,7 +23,6 @@ def buildClassTree(topic,classTree):
 	
 	#the two ontology will not be queried
 	typeFilter = re.compile('.*(owl#Thing|schema.org).*')
-	
 	#iterate through all classes the topic assigned to
 	for objType in topic.objects(rdflib.namespace.RDF.type):
 		#print (objType.identifier)
@@ -31,14 +34,28 @@ def buildClassTree(topic,classTree):
 		#for each attempt, print out connection status if failed
 		for i in range(10):
 			try:
-				#qname won't work in some cases
-				#add class definition info into the dictionary
+				
+				print ("connecting ",objType.identifier)
+				
 				classDict[objType.identifier]=rdflib.resource.Resource(\
 				rdflib.Graph().parse(str(objType.identifier),format="application/rdf+xml"),\
 				rdflib.URIRef(objType.identifier))
 				
-#				classDict[objType.qname()]=rdflib.Graph().parse(str(objType.identifier),format="application/rdf+xml")
-#				print (len(classDict[objType.identifier]))
+				"""
+				queryQueue = multiprocessing.Queue()
+				queryProc = multiprocessing.Process(target=globals().ontologyQuery, args=(objType,queryQueue,))
+				queryProc.start()
+				classDict[objType.identifier]=queryQueue.get()
+				queryProc.join(10)
+				if queryProc.is_alive:
+					print ("proc timeout...")
+					# Terminate
+					queryQueue.close()
+					queryProc.terminate()
+					queryProc.join()
+					raise
+				"""
+				
 				connFlag = 1
 				break
 			except:
@@ -55,13 +72,6 @@ def buildClassTree(topic,classTree):
 				classTree.add_edge(topic.identifier,objType.identifier)
 				
 			#test whether the newly added node has edges to other nodes
-			#output node info
-			lang = re.compile('.*en.*')
-			for label in classDict[objType.identifier].objects(rdflib.namespace.RDFS.label):
-				if str(label._language)=='en':
-				# cannot use the getter for rdflib.term.literal
-					print ("belongs to ",str(label._value).encode(encoding='utf-8',errors='ignore'))
-					#break
 			
 			#find subclass relations
 			for subClass in classDict[objType.identifier].subjects(rdflib.namespace.RDFS.subClassOf):

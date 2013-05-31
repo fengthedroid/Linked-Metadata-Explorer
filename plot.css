@@ -1,10 +1,23 @@
-
-circle.node {
-  stroke: #fff;
-  stroke-width: 2 px;
+.link {
+  fill: #036;
+  stroke: #036;
+  stroke-width: 2px;
 }
 
-line.link {
-  stroke: #999;
-  stroke-opacity: .6;
+.marker {
+  fill: #056;
+  stroke: #036;
+  stroke-width: 0px;
+}
+
+circle {
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: 2px;
+}
+
+text {
+  fill: #000;
+  font: 13px sans-serif;
+  pointer-events: none;
 }

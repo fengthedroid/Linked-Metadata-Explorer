@@ -8,9 +8,8 @@ import sys
 import json
 import networkx as nx
 from networkx.readwrite import json_graph
-from disam import disam
-from classRelation import buildClassTree
-
+from disam import *
+from classRelation import *
 
 topicList = disam(sys.argv[1])
 
