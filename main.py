@@ -1,12 +1,13 @@
 '''
-Ver:		0.1
+Ver:		0.2
 Author:		Feng Wu
 Env:		Run on python 3.3
 '''
 
 import sys
+import json
 import networkx as nx
-import matplotlib.pyplot as plt
+from networkx.readwrite import json_graph
 from disam import disam
 from classRelation import buildClassTree
 
@@ -31,5 +32,6 @@ except Exception as ex:
 
 print (classTree.nodes())
 print (classTree.edges())
-nx.draw(classTree)
-plt.show()
+
+g_json = json_graph.node_link_data(classTree)
+json.dump(g_json,open('./res/plot.json','w'))
