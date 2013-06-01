@@ -8,10 +8,10 @@ var svg = d3.select("body").append("svg")
 
 var force = d3.layout.force()
 	.linkDistance(200)
-    .gravity(0.02)
+    .gravity(0.05)
 	.friction(0.9)
     //.distance(200)
-    .charge(-1000)
+    .charge(-800)
     .size([width, height]);
 
 d3.json("res/plot.json", function(error, json) {
@@ -57,7 +57,7 @@ d3.json("res/plot.json", function(error, json) {
 	node.append("text")
 		.attr("dx", 12)
 		.attr("dy", ".35em")
-		.text(function(d) { return d.id });
+		.text(function(d) { return d.id.substr(7)});
 
 	force.on("tick", function() {
 		link.attr("x1", function(d) { return d.source.x; })
