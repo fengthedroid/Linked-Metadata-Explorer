@@ -25,7 +25,7 @@ with open('res/tlstore.pickle', 'wb') as topicListStoreHandler:
 
 print ("Content-Type: text/html\n\n")
 print('<div>You have entered: '+ searchTerm +'</div>')
-print('<div>New search: <form method="get" action="./cgi-bin/main.py"><input type="text" size="50" name="mySearch"><input type="submit" value="search" /></form></div>')
+print('<div>New search: <form method="get" action="main.py"><input type="text" size="50" name="mySearch"><input type="submit" value="search" /></form></div>')
 
 for topic in topicList:
 	print("<hr /><hr /><div><a href=show.py?mySelect="+str(topicList.index(topic))+">\n No."+str(topicList.index(topic)+1)+"  Title:  ",topic.label(),'</a>')
