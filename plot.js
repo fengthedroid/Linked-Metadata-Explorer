@@ -8,7 +8,7 @@ var svg = d3.select("body").append("svg")
 
 var force = d3.layout.force()
 	.linkDistance(200)
-    .gravity(0.05)
+    .gravity(0.02)
 	.friction(0.9)
     //.distance(200)
     .charge(-1000)

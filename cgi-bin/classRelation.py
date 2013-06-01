@@ -1,5 +1,5 @@
 '''
-Ver:		0.1
+Ver:		0.4
 Author:		Feng Wu
 Env:		Run on python 3.3
 '''
@@ -9,13 +9,11 @@ import re
 import time
 import rdflib
 
+import threading
+
 from SPARQLWrapper import SPARQLWrapper
 
-"""	
-def ontologyQuery(objType,queue):
-	print ("separate proc ", objType)
-	queue.put(rdflib.resource.Resource(rdflib.Graph().parse(str(objType.identifier),format="application/rdf+xml"),rdflib.URIRef(objType.identifier)))
-"""
+
 def buildClassTree(topic,classTree):
 
 	classDict = {topic.identifier:topic}
@@ -32,15 +30,24 @@ def buildClassTree(topic,classTree):
 			
 		connFlag = 0
 		#for each attempt, print out connection status if failed
-		for i in range(10):
+		for i in range(5):
 			try:
 				
 				print ("connecting ",objType.identifier)
 				
+				#using thread to query in case of hanging by rdflib
+				qT = QueryThread(objType)
+				qT.start()
+				qT.join(3)
+				if qT.isAlive():
+					raise
+				else:
+					classDict[objType.identifier] = qT.result
+				"""
 				classDict[objType.identifier]=rdflib.resource.Resource(\
 				rdflib.Graph().parse(str(objType.identifier),format="application/rdf+xml"),\
 				rdflib.URIRef(objType.identifier))
-				
+				"""
 				"""
 				queryQueue = multiprocessing.Queue()
 				queryProc = multiprocessing.Process(target=globals().ontologyQuery, args=(objType,queryQueue,))
@@ -60,8 +67,8 @@ def buildClassTree(topic,classTree):
 				break
 			except:
 				print ("connection down... retrying...")
-				time.sleep(5)
-				if i == 9:
+				time.sleep(2)
+				if i == 4:
 					print ("unable to connect, discard this class...")							
 
 		#if connected:
@@ -92,3 +99,22 @@ def buildClassTree(topic,classTree):
 				print ("superclass is "+str(superClass.identifier))
 			
 	return classTree
+
+	
+# need multi-thread to kill hanging query issued by rdflib
+
+
+class QueryThread(threading.Thread):
+	def __init__(self,typeObj):
+		threading.Thread.__init__(self)
+		self.typeO = typeObj
+		self.result = ''
+	def run(self):
+		self.result = rdflib.resource.Resource(rdflib.Graph().parse(str(self.typeO.identifier),format="application/rdf+xml"),rdflib.URIRef(self.typeO.identifier))
+
+
+"""	
+def ontologyQuery(objType,queue):
+	print ("separate proc ", objType)
+	queue.put(rdflib.resource.Resource(rdflib.Graph().parse(str(objType.identifier),format="application/rdf+xml"),rdflib.URIRef(objType.identifier)))
+"""
