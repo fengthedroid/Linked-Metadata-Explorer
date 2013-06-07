@@ -7,9 +7,9 @@ import cgi
 import webbrowser # open finished plot
 import json
 import pickle
-import networkx as nx
+
 from networkx.readwrite import json_graph
-from classRelation import *
+from treeBuilder import *
 
 import cgitb
 cgitb.enable()
@@ -20,10 +20,10 @@ with open('res/tlstore.pickle', 'rb') as topicListStoreHandler:
 chosenTopic = topicList[int(cgi.FieldStorage()['mySelect'].value)]
 
 #create a directedd graph instance
-classTree = nx.DiGraph()
+
 
 try:
-	buildClassTree(chosenTopic,classTree)
+	classTree=buildClassTree(chosenTopic)
 except Exception as ex:
 	raise ex
 

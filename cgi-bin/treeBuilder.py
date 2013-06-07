@@ -6,20 +6,24 @@ Env:		Run on python 3.3
 
 #regex module
 import re
-import time
 import rdflib
-
+import networkx as nx
 from threadParser import *
-from SPARQLWrapper import SPARQLWrapper
 
 
-def buildClassTree(topic,classTree):
-
+def buildClassTree(topic):
+	'''build a classTree around the given topic
+	param topic must be a rdflib Resource class object'''
+	
+	# Initialize the tree
+	classTree = nx.DiGraph()
+	
 	classDict = {topic.identifier:topic}
 	classTree.add_node(topic.identifier)
 	
 	#the two ontology will not be queried
 	typeFilter = re.compile('.*(owl#Thing|schema.org).*')
+	
 	#iterate through all classes the topic assigned to
 	for objType in topic.objects(rdflib.namespace.RDF.type):
 		#print (objType.identifier)

@@ -26,7 +26,7 @@ class ThreadParser(threading.Thread):
 		return self.__result
 		
 	def getResourceResult(self):
-		'''getter for result'''
+		'''wrap the result as rdflib Resource class object'''
 		return rdflib.resource.Resource(self.__result,self.inURI)
 		
 	def setResult(self,rdfGraph):

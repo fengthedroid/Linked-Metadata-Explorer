@@ -10,7 +10,7 @@ import sys
 import cgi
 import pickle
 
-from disam import *
+from treeHandler import *
 
 import cgitb
 cgitb.enable()
