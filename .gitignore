@@ -1,3 +1,4 @@
 *.bak
-./bak/*
-./res/*
+bak/*
+res/*
+__pycache__/*

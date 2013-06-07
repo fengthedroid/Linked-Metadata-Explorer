@@ -1,11 +1,13 @@
 '''
-Ver:		0.4
+Ver:		0.7
 Author:		Feng Wu
 Env:		Run on python 3.3
 '''
 
 #regex module
 import re
+import sys
+import time
 import rdflib
 import networkx as nx
 from threadParser import *
@@ -15,12 +17,13 @@ def buildClassTree(topic):
 	'''build a classTree around the given topic
 	param topic must be a rdflib Resource class object'''
 	
-	# Initialize the tree
+	# initialize the tree
 	classTree = nx.DiGraph()
-	
 	classDict = {topic.identifier:topic}
 	classTree.add_node(topic.identifier)
 	
+	#initialize a thread pool
+	threadPool = set()
 	#the two ontology will not be queried
 	typeFilter = re.compile('.*(owl#Thing|schema.org).*')
 	
@@ -31,57 +34,53 @@ def buildClassTree(topic):
 		#discard classes belongs to w3 and schema.org
 			continue
 			
-		connFlag = 0
-		#for each attempt, print out connection status if failed
-		for i in range(5):
+		#using thread to query in case of hanging by rdflib
+		queryThread = ThreadParser(objType.identifier)
+		queryThread.start()
+		threadPool.add(queryThread)
+
+	# wait 5 seconds for the query to complete
+	time.sleep(5)
+	
+	#join all thread back
+	for thread in threadPool:
+		queriedResult = None
+
+		if thread is not threading.currentThread():
 			try:
-				
-				print ("connecting ",objType.identifier)
-				
-				#using thread to query in case of hanging by rdflib
-				qT = QueryThread(objType)
-				qT.start()
-				qT.join(3)
-				if qT.isAlive():
+				thread.join()
+				if thread.isAlive():
 					raise
 				else:
-					classDict[objType.identifier] = qT.result
-				
-				connFlag = 1
-				break
+					queriedResult = thread.getResourceResult()
+					classDict[queriedResult.identifier] = queriedResult	
 			except:
-				print ("connection down... retrying...")
-				time.sleep(2)
-				if i == 4:
-					print ("unable to connect, discard this class...")							
+					print ("connection down...",file=sys.stderr)
 
-		#if connected:
-		if connFlag == 1:
-			#add class node to the graph if not yet added
-			if not objType.identifier in classTree.nodes():
-				classTree.add_node(objType.identifier)
-				classTree.add_edge(topic.identifier,objType.identifier)
-				
-			#test whether the newly added node has edges to other nodes
-			
-			#find subclass relations
-			for subClass in classDict[objType.identifier].subjects(rdflib.namespace.RDFS.subClassOf):
-				if typeFilter.match(str(subClass)):
-				#ignore classes from schema.org or w3
-					continue
-				if subClass.identifier in classTree.nodes():
-					classTree.add_edge(subClass.identifier,objType.identifier)
-				print ("subclass is "+str(subClass.identifier))
-				
-			#find superclass relations
-			for superClass in classDict[objType.identifier].objects(rdflib.namespace.RDFS.subClassOf):
-				if typeFilter.match(str(superClass)):
-				#ignore classes from schema.org or w3
-					continue
-				if superClass.identifier in classTree.nodes():
-					classTree.add_edge(objType.identifier,superClass.identifier)
-				print ("superclass is "+str(superClass.identifier))
-			
+			#if connected:
+			if queriedResult is not None:
+				#add class node to the graph if not yet added
+				if not queriedResult.identifier in classTree.nodes():
+					classTree.add_node(queriedResult.identifier)
+					classTree.add_edge(topic.identifier,queriedResult.identifier)
+
+				#test whether the newly added node has edges to other nodes
+				#find subclass relations
+				for subClass in classDict[queriedResult.identifier].subjects(rdflib.namespace.RDFS.subClassOf):
+					if typeFilter.match(str(subClass)):
+					#ignore classes from schema.org or w3
+						continue
+					if subClass.identifier in classTree.nodes():
+						classTree.add_edge(subClass.identifier,queriedResult.identifier)
+					print ("----subclass is "+str(subClass.identifier),file=sys.stderr)
+
+				#find superclass relations
+				for superClass in classDict[queriedResult.identifier].objects(rdflib.namespace.RDFS.subClassOf):
+					if typeFilter.match(str(superClass)):
+					#ignore classes from schema.org or w3
+						continue
+					if superClass.identifier in classTree.nodes():
+						classTree.add_edge(queriedResult.identifier,superClass.identifier)
+					print ("----superclass is "+str(superClass.identifier),file=sys.stderr)
+
 	return classTree
-
-	
