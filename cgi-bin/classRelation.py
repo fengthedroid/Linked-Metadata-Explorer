@@ -9,8 +9,7 @@ import re
 import time
 import rdflib
 
-import threading
-
+from threadParser import *
 from SPARQLWrapper import SPARQLWrapper
 
 
@@ -43,25 +42,6 @@ def buildClassTree(topic,classTree):
 					raise
 				else:
 					classDict[objType.identifier] = qT.result
-				"""
-				classDict[objType.identifier]=rdflib.resource.Resource(\
-				rdflib.Graph().parse(str(objType.identifier),format="application/rdf+xml"),\
-				rdflib.URIRef(objType.identifier))
-				"""
-				"""
-				queryQueue = multiprocessing.Queue()
-				queryProc = multiprocessing.Process(target=globals().ontologyQuery, args=(objType,queryQueue,))
-				queryProc.start()
-				classDict[objType.identifier]=queryQueue.get()
-				queryProc.join(10)
-				if queryProc.is_alive:
-					print ("proc timeout...")
-					# Terminate
-					queryQueue.close()
-					queryProc.terminate()
-					queryProc.join()
-					raise
-				"""
 				
 				connFlag = 1
 				break
@@ -101,20 +81,3 @@ def buildClassTree(topic,classTree):
 	return classTree
 
 	
-# need multi-thread to kill hanging query issued by rdflib
-
-
-class QueryThread(threading.Thread):
-	def __init__(self,typeObj):
-		threading.Thread.__init__(self)
-		self.typeO = typeObj
-		self.result = ''
-	def run(self):
-		self.result = rdflib.resource.Resource(rdflib.Graph().parse(str(self.typeO.identifier),format="application/rdf+xml"),rdflib.URIRef(self.typeO.identifier))
-
-
-"""	
-def ontologyQuery(objType,queue):
-	print ("separate proc ", objType)
-	queue.put(rdflib.resource.Resource(rdflib.Graph().parse(str(objType.identifier),format="application/rdf+xml"),rdflib.URIRef(objType.identifier)))
-"""

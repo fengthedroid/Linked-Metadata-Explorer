@@ -1,3 +1,5 @@
+#!/usr/bin/python -u
+
 '''
 Ver:		0.4
 Author:		Feng Wu
@@ -13,7 +15,10 @@ from disam import *
 import cgitb
 cgitb.enable()
 
+#read the search term from http GET
 searchTerm = cgi.FieldStorage()['mySearch'].value
+
+print(searchTerm,file=sys.stderr)
 
 showLimit = 25
 
