@@ -34,4 +34,4 @@ print('<div>New search: <form method="get" action="main.py"><input type="text" s
 
 for topic in topicList:
 	print("<hr /><hr /><div><a href=show.py?mySelect="+str(topicList.index(topic))+">\n No."+str(topicList.index(topic)+1)+"  Title:  ",topic.label(),'</a>')
-	print("<br><br> Absract: ",str(topic.comment()).encode(encoding='utf-8',errors='ignore'),"</div>")		
+	print("<br><br> Abstract: ",str(topic.comment()).encode(encoding='utf-8',errors='ignore'),"</div>")		
