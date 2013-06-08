@@ -52,11 +52,13 @@ d3.json("res/plot.json", function(error, json) {
 		.data(json.nodes)
 		.enter().append("g")
 		.attr("class", "node")
+		
 		.call(force.drag);
 		
 	node.append("circle")
 		.attr("r", 10)
-		.style("fill", function(d) { return color(d.group); })
+		.on("click", click)
+		.style("fill", function(d) { return color(d.group); });
 
 	node.append("text")
 		.attr("dx", 12)
@@ -78,3 +80,11 @@ d3.select("#download").on("click", function(){
         .attr("href", 'data:application/octet-stream;base64,' + btoa(d3.select("#chart").html()))
         .attr("download", "viz.svg") 
     })
+	
+function click (d){
+	d3.select(this).attr('r', 15)
+	.style("fill","lightcoral")
+	.style("stroke","red")
+	d.id
+	window.location = d.id
+}

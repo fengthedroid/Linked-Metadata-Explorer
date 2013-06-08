@@ -90,10 +90,9 @@ def buildClassTree(topic):
 				for instance in classDict[queriedResult.identifier].subjects(rdflib.namespace.RDF.type):
 					if index > 5:
 						break
-					if instance.identifier == topic.identifier:
-						continue
-					classTree.add_node(instance.identifier)
-					classTree.add_edge(instance.identifier,queriedResult.identifier)
-					classTree.node[instance.identifier]['group']=10
-					index += 1
+					if instance.identifier not in classTree.nodes():
+						classTree.add_node(instance.identifier)
+						classTree.add_edge(instance.identifier,queriedResult.identifier)
+						classTree.node[instance.identifier]['group']=10
+						index += 1
 	return classTree
