@@ -25,8 +25,8 @@ def buildClassTree(topic):
 	
 	#initialize a thread pool
 	threadPool = set()
-	#the two ontology will not be queried
-	typeFilter = re.compile('.*(owl#Thing|schema.org).*')
+	#these ontologies will not be queried
+	typeFilter = re.compile('.*(owl#Thing|schema.org|opengis).*')
 	
 	#iterate through all classes the topic assigned to
 	for objType in topic.objects(rdflib.namespace.RDF.type):
