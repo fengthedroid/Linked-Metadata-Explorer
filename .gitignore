@@ -1,5 +1,6 @@
 *.bak
 bak/*
-res/*
+res/plot.json
+res/tlstore.pickle
 __pycache__/*
 cgi-bin/__pycache__/*

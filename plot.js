@@ -4,9 +4,11 @@ var width = 960,
 	
 var color = d3.scale.category10();
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#chart").append("svg")
+	.attr("xmlns", "http://www.w3.org/2000/svg")
     .attr("width", width)
     .attr("height", height);
+
 
 var force = d3.layout.force()
 	.linkDistance(150)
@@ -21,8 +23,6 @@ d3.json("res/plot.json", function(error, json) {
 		.links(json.links)
 		.start();
 
-
-	
 	// build the arrow.
 	svg.append("svg:defs").selectAll("marker")
 		.data(["end"])      // Different link/path types can be defined here
@@ -39,11 +39,14 @@ d3.json("res/plot.json", function(error, json) {
 		.attr("d", "M0,-5L10,0L0,5");
 		
 	// add the links and the arrows
-	var link = svg.append("svg:g").selectAll("path")
+	var link = svg.selectAll(".line")
 		.data(force.links())
-		.enter().append("svg:line")
+		.enter().append("line")
 		.attr("class", "link")
-		.attr("marker-end", "url(#end)");
+		.attr("marker-end", "url(#end)")
+		.style("fill", "#036")
+		.style("stroke", "#036")
+		.style("stroke-width", "2px");
 
 	var node = svg.selectAll(".node")
 		.data(json.nodes)
@@ -69,3 +72,9 @@ d3.json("res/plot.json", function(error, json) {
 		node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 	});
 });
+
+d3.select("#download").on("click", function(){
+		d3.select(this)
+        .attr("href", 'data:application/octet-stream;base64,' + btoa(d3.select("#chart").html()))
+        .attr("download", "viz.svg") 
+    })
