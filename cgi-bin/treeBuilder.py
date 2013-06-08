@@ -21,6 +21,7 @@ def buildClassTree(topic):
 	classTree = nx.DiGraph()
 	classDict = {topic.identifier:topic}
 	classTree.add_node(topic.identifier)
+	classTree.node[topic.identifier]['group']= 2
 	
 	#initialize a thread pool
 	threadPool = set()
@@ -39,10 +40,10 @@ def buildClassTree(topic):
 		queryThread.start()
 		threadPool.add(queryThread)
 
-	# wait 5 seconds for the query to complete
-	time.sleep(5)
+	# wait 7 seconds for the query to complete
+	time.sleep(7)
 	
-	#join all thread back
+	#join all threads back
 	for thread in threadPool:
 		queriedResult = None
 
@@ -63,6 +64,7 @@ def buildClassTree(topic):
 				if not queriedResult.identifier in classTree.nodes():
 					classTree.add_node(queriedResult.identifier)
 					classTree.add_edge(topic.identifier,queriedResult.identifier)
+					classTree.node[queriedResult.identifier]['group']=6
 
 				#test whether the newly added node has edges to other nodes
 				#find subclass relations
@@ -72,7 +74,7 @@ def buildClassTree(topic):
 						continue
 					if subClass.identifier in classTree.nodes():
 						classTree.add_edge(subClass.identifier,queriedResult.identifier)
-					print ("----subclass is "+str(subClass.identifier),file=sys.stderr)
+					# print ("----subclass is "+str(subClass.identifier),file=sys.stderr)
 
 				#find superclass relations
 				for superClass in classDict[queriedResult.identifier].objects(rdflib.namespace.RDFS.subClassOf):
@@ -81,6 +83,17 @@ def buildClassTree(topic):
 						continue
 					if superClass.identifier in classTree.nodes():
 						classTree.add_edge(queriedResult.identifier,superClass.identifier)
-					print ("----superclass is "+str(superClass.identifier),file=sys.stderr)
-
+					# print ("----superclass is "+str(superClass.identifier),file=sys.stderr)
+					
+				#find all instances for the given class
+				index = 0
+				for instance in classDict[queriedResult.identifier].subjects(rdflib.namespace.RDF.type):
+					if index > 5:
+						break
+					if instance.identifier == topic.identifier:
+						continue
+					classTree.add_node(instance.identifier)
+					classTree.add_edge(instance.identifier,queriedResult.identifier)
+					classTree.node[instance.identifier]['group']=10
+					index += 1
 	return classTree

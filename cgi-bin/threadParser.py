@@ -35,7 +35,8 @@ class ThreadParser(threading.Thread):
 	def setResult(self,rdfGraph):
 		'''setter for result'''
 		self.__result = rdfGraph
-		# if rdfGraph is not None:
-			# print ("___!!!---graph lenght is ",len(rdfGraph),self.inURI,file=sys.stderr)
-		# else:
-			# print ("___!!!--nonenonenone ",self.inURI,file=sys.stderr)
+		#for debugging
+		if rdfGraph is not None:
+			print ("___!!!---graph lenght is ",len(rdfGraph),' -- ',self.inURI,file=sys.stderr)
+		else:
+			print ("___!!!--Not properly queried -- ",self.inURI,file=sys.stderr)

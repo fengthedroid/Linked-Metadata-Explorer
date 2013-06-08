@@ -6,7 +6,6 @@ Env:	Run on python 3.3
 
 import sys
 import rdflib
-import time
 from SPARQLWrapper import SPARQLWrapper
 
 #param: command line input
@@ -27,13 +26,9 @@ def disam(keywords,resultLimit):
 	for subjUri in results.subjects(predicate=rdflib.namespace.RDFS.label):	
 		if index > resultLimit:
 			break
+		#wrap every subject into a rdflib resource class object
 		topic = rdflib.resource.Resource(results,subjUri)	
 		topicList.append(topic)
-		#print("No."+str(index)+"  Title:  ",topic.label())
-		#print("Absract: ",str(topic.comment()).encode(encoding='utf-8',errors='ignore'))		
-		#for objType in topic.objects(rdflib.namespace.RDF.type):
-		#	print("\tThe type of the topic is",objType.qname())	
-		#print("--------------\n")
 		index += 1
 	
 	return topicList
@@ -43,7 +38,7 @@ def __queryKeyword(keywords):
 	#Split words into a list
 	rawList = keywords.split(' ')
 
-	#
+	#Using regular expression to build query to enable case insensitive
 	filterString = ''
 	for i in range(1,len(rawList)):
 		filterString+='FILTER regex(?label, "['+rawList[i][0].upper()+\
@@ -68,17 +63,13 @@ def __queryKeyword(keywords):
 	return queryStr
 
 def __execQuery(queryStr):
-
 	sparql = SPARQLWrapper("http://dbpedia.org/sparql")
 	sparql.setQuery(queryStr)
 	sparql.setReturnFormat('rdf')
 
-	for i in range(20):
-		try:
-			results = sparql.query().convert()
-			break
-		except:
-			print ('error: cannot query.')
-			time.sleep(5)
-		
+	#DBpedia may not be responsive
+	try:
+		results = sparql.query().convert()
+	except:
+		print ('error: cannot query.')
 	return results

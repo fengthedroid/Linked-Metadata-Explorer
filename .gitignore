@@ -2,3 +2,4 @@
 bak/*
 res/*
 __pycache__/*
+cgi-bin/__pycache__/*

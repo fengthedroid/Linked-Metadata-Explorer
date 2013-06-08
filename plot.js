@@ -1,16 +1,17 @@
 
 var width = 960,
     height = 500;
+	
+var color = d3.scale.category10();
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
 var force = d3.layout.force()
-	.linkDistance(200)
+	.linkDistance(150)
     .gravity(0.05)
 	.friction(0.9)
-    //.distance(200)
     .charge(-800)
     .size([width, height]);
 
@@ -52,7 +53,7 @@ d3.json("res/plot.json", function(error, json) {
 		
 	node.append("circle")
 		.attr("r", 10)
-		.style("fill", "#099");
+		.style("fill", function(d) { return color(d.group); })
 
 	node.append("text")
 		.attr("dx", 12)
