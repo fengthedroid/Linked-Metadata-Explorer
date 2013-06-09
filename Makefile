@@ -1,11 +1,16 @@
+PACKAGE = Ssearch.tar.gz
+TAR = tar
+INTERPRETER = Python
+EXECUTABLE = start.py
+
 install:
-	tar xvfz Ssearch.tar.gz
+	$(TAR) xvfz $(PACKAGE)
 	
-run:
-	Python start.py
+exec:
+	$(INTERPRETER) $(EXECUTABLE)
 	
 tar:
-	tar cvfz Ssearch.tar.gz *
+	$(TAR) cvfz $(PACKAGE) *
 	
 clean:
-	rm Ssearch.tar.gz
+	rm $(PACKAGE)
