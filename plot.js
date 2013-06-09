@@ -1,6 +1,6 @@
 
-var width = 960,
-    height = 500;
+var width = 1024,
+    height = 720;
 	
 var color = d3.scale.category10();
 

@@ -17,7 +17,7 @@ def buildClassTree(topic):
 	'''build a classTree around the given topic
 	param topic must be a rdflib Resource class object'''
 	
-	# initialize the tree
+	# initialize the graph
 	classTree = nx.DiGraph()
 	classDict = {topic.identifier:topic}
 	classTree.add_node(topic.identifier)
