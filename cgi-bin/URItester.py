@@ -9,11 +9,8 @@ import time
 from tkinter import *
 from threadParser import *
 
-
 class Application(Frame):
 
-	
-	
 	def createWidgets(self):
 	
 		self.parent.title("URI parser")
