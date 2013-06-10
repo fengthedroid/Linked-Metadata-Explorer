@@ -1,6 +1,5 @@
-
 '''
-Ver:		0.1
+Ver:		0.2
 Author:		Feng Wu
 Env:		Run on python 3.3
 '''

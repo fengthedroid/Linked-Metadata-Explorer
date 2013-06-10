@@ -57,8 +57,8 @@ def buildClassTree(topic):
 					# classDict[queriedResult.identifier] = queriedResult
 					classDict[thread.inURI] = thread.getGraphResult()
 			except:
-				# raise
-				print ("connection down...",file=sys.stderr)
+				raise
+				# print ("connection down...",file=sys.stderr)
 
 			#if connected:
 			# if queriedResult is not None:
