@@ -1,4 +1,4 @@
-#!/usr/bin/env Python
+
 
 '''
 Ver:		0.4

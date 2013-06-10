@@ -53,46 +53,66 @@ def buildClassTree(topic):
 				if thread.isAlive():
 					raise
 				else:
-					queriedResult = thread.getResourceResult()
-					classDict[queriedResult.identifier] = queriedResult	
+					# queriedResult = thread.getResourceResult()
+					# classDict[queriedResult.identifier] = queriedResult
+					classDict[thread.inURI] = thread.getGraphResult()
 			except:
-					print ("connection down...",file=sys.stderr)
+				# raise
+				print ("connection down...",file=sys.stderr)
 
 			#if connected:
-			if queriedResult is not None:
+			# if queriedResult is not None:
+			if len(classDict[thread.inURI]) != 0:
 				#add class node to the graph if not yet added
-				if not queriedResult.identifier in classTree.nodes():
-					classTree.add_node(queriedResult.identifier)
-					classTree.add_edge(topic.identifier,queriedResult.identifier)
-					classTree.node[queriedResult.identifier]['group']=6
-
+				if not thread.inURI in classTree.nodes():
+					classTree.add_node(thread.inURI)
+					classTree.add_edge(topic.identifier,thread.inURI)
+					classTree.node[thread.inURI]['group']=6
 				#test whether the newly added node has edges to other nodes
 				#find subclass relations
-				for subClass in classDict[queriedResult.identifier].subjects(rdflib.namespace.RDFS.subClassOf):
+				for subClass in classDict[thread.inURI].subjects(predicate=rdflib.namespace.RDFS.subClassOf):
 					if typeFilter.match(str(subClass)):
 					#ignore classes from schema.org or w3
 						continue
-					if subClass.identifier in classTree.nodes():
-						classTree.add_edge(subClass.identifier,queriedResult.identifier)
-					# print ("----subclass is "+str(subClass.identifier),file=sys.stderr)
+						
+					#dbpedia change:
+					if subClass in classTree.nodes():
+						classTree.add_edge(subClass,thread.inURI)
+						
+					# if subClass.identifier in classTree.nodes():
+						# classTree.add_edge(subClass.identifier,queriedResult.identifier)
+					# print ("----subclass is "+str(subClass),file=sys.stderr)
 
 				#find superclass relations
-				for superClass in classDict[queriedResult.identifier].objects(rdflib.namespace.RDFS.subClassOf):
+				for superClass in classDict[thread.inURI].objects(predicate=rdflib.namespace.RDFS.subClassOf):
 					if typeFilter.match(str(superClass)):
 					#ignore classes from schema.org or w3
 						continue
-					if superClass.identifier in classTree.nodes():
-						classTree.add_edge(queriedResult.identifier,superClass.identifier)
-					# print ("----superclass is "+str(superClass.identifier),file=sys.stderr)
+					
+					#dbpedia change:
+					if superClass in classTree.nodes():
+						classTree.add_edge(thread.inURI,superClass)
+					
+					# if superClass.identifier in classTree.nodes():
+						# classTree.add_edge(queriedResult.identifier,superClass.identifier)
+					# print ("----superclass is "+str(superClass),file=sys.stderr)
 					
 				#find all instances for the given class
 				index = 0
-				for instance in classDict[queriedResult.identifier].subjects(rdflib.namespace.RDF.type):
+				for instance in classDict[thread.inURI].subjects(predicate=rdflib.namespace.RDF.type):
 					if index > 5:
 						break
-					if instance.identifier not in classTree.nodes():
-						classTree.add_node(instance.identifier)
-						classTree.add_edge(instance.identifier,queriedResult.identifier)
-						classTree.node[instance.identifier]['group']=10
+						
+					# print ("----instance "+str(instance),file=sys.stderr)
+					#dbpedia change
+					if instance not in classTree.nodes():
+						classTree.add_node(instance)
+						classTree.add_edge(instance,thread.inURI)
+						classTree.node[instance]['group']=10
 						index += 1
+					# if instance.identifier not in classTree.nodes():
+						# classTree.add_node(instance.identifier)
+						# classTree.add_edge(instance.identifier,queriedResult.identifier)
+						# classTree.node[instance.identifier]['group']=10
+						# index += 1
 	return classTree

@@ -1,4 +1,9 @@
-#!/usr/bin/env Python
+
+'''
+Ver:		0.1
+Author:		Feng Wu
+Env:		Run on python 3.3
+'''
 
 import sys
 from http.server import HTTPServer, CGIHTTPRequestHandler

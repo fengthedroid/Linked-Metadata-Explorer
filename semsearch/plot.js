@@ -63,7 +63,8 @@ d3.json("res/plot.json", function(error, json) {
 	node.append("text")
 		.attr("dx", 12)
 		.attr("dy", ".35em")
-		.text(function(d) { return d.id.substr(7)});
+		.text(function(d) { return d.id});
+		// .text(function(d) { return d.id.substr(7)});
 
 	force.on("tick", function() {
 		link.attr("x1", function(d) { return d.source.x; })
