@@ -89,7 +89,7 @@ def buildClassTree(topic):
 				#find all instances for the given class
 				index = 0
 				for instance in classDict[queriedResult.identifier].subjects(rdflib.namespace.RDF.type):
-					if index > 5:
+					if index > 2:
 						break
 					if instance.identifier not in classTree.nodes():
 						classTree.add_node(instance.identifier)
