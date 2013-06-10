@@ -56,7 +56,8 @@ def buildClassTree(topic):
 					queriedResult = thread.getResourceResult()
 					classDict[queriedResult.identifier] = queriedResult	
 			except:
-					print ("connection down...",file=sys.stderr)
+				raise
+				# print ("connection down...",file=sys.stderr)
 
 			#if connected:
 			if queriedResult is not None:

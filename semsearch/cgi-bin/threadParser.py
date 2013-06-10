@@ -1,5 +1,5 @@
 '''
-Ver:		0.1
+Ver:		0.4
 Author:		Feng Wu
 Env:		Run on python 3.3
 '''
@@ -7,7 +7,6 @@ Env:		Run on python 3.3
 import sys
 import rdflib
 import threading
-from threadParser import *
 
 class ThreadParser(threading.Thread):
 	'''ThreadParser object will parse the URI and return'''
@@ -20,7 +19,12 @@ class ThreadParser(threading.Thread):
 		
 	def run(self):
 		'''spawn a thread to parse the URI for the associated RDF graph'''
-		self.setResult(rdflib.Graph().parse(self.inURI,format="application/rdf+xml"))
+		self.__initGraph = rdflib.Graph().parse(self.inURI,format="application/rdf+xml")
+		self.__serializedGraph = self.__initGraph.serialize(encoding='utf-8')
+		# print (self.__serializedGraph,file=sys.stderr)
+		self.__serializedGraph = self.__serializedGraph.decode('utf-8').replace("local:/","http://dbpedia.org/")
+		# print (self.__serializedGraph,file=sys.stderr)
+		self.setResult(rdflib.Graph().parse(format='xml',data=self.__serializedGraph))
 		
 	def getGraphResult(self):
 		'''getter for result'''
@@ -36,7 +40,7 @@ class ThreadParser(threading.Thread):
 		'''setter for result'''
 		self.__result = rdfGraph
 		#for debugging
-		if rdfGraph is not None:
-			print ("___!!!---graph lenght is ",len(rdfGraph),' -- ',self.inURI,file=sys.stderr)
-		else:
-			print ("___!!!--Not properly queried -- ",self.inURI,file=sys.stderr)
+		# if rdfGraph is not None:
+			# print ("___!!!---graph lenght is ",len(rdfGraph),' -- ',self.inURI,file=sys.stderr)
+		# else:
+			# print ("___!!!--Not properly queried -- ",self.inURI,file=sys.stderr)
