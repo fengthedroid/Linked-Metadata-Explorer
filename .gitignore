@@ -1,7 +1,5 @@
-*.bak
-bak/*
-res/plot.json
-res/tlstore.pickle
-__pycache__/*
-cgi-bin/__pycache__/*
+
+semsearch/res/plot.json
+semsearch/res/tlstore.pickle
+semsearch/cgi-bin/__pycache__/*
 *.gz
