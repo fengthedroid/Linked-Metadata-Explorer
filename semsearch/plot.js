@@ -12,7 +12,7 @@ var svg = d3.select("#chart").append("svg")
 
 var force = d3.layout.force()
 	.linkDistance(150)
-    .gravity(0.05)
+    .gravity(0.02)
 	.friction(0.9)
     .charge(-800)
     .size([width, height]);
